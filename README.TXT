@@ -86,6 +86,7 @@ to scripts/lib/defaultscripts.lua inside the Stations block of scripts
 [[CHANGELOG]]
 
 1.1 -- 0.20.2 Security update
+    - Added Namespacing to all scripts where applicable.
     - Added "callable" functionality to remote calls.
 
 1.0 -- Initial release

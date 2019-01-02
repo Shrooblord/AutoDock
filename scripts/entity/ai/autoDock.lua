@@ -14,7 +14,7 @@ local PlanGenerator = require("plangenerator")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
 -- namespace AutoDock
-AutoDock = AutoDock or {}
+AutoDock = {}
 
 local player
 local stationIndex
@@ -170,7 +170,7 @@ end
 --Hijhacked from SectorGenerator, with some added functionality specific to the Auto-Docker
 function AutoDock.createDockBeacon(position, faction, text, args)
     if onClient() then
-        invokeServerFunction("AutoDock.createDockBeacon", position, faction, text, args)
+        invokeServerFunction("createDockBeacon", position, faction, text, args)
         return
     end
     
@@ -201,7 +201,7 @@ function AutoDock.createDockBeacon(position, faction, text, args)
     if faction then desc.factionIndex = faction.index end
 
     local beacon = Sector():createEntity(desc)
-    beacon:addScript("mods/AutoDock/scripts/entity/beacon", text, args)
+    beacon:addScript("mods/AutoDock/scripts/entity/autoDockBeaconUI", text, args)
     
     local station = Entity(stationIndex)
     local ship = Entity()

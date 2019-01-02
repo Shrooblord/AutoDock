@@ -6,7 +6,7 @@ require("callable")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
 -- namespace AutoDockUI
-AutoDockUI = AutoDockUI or {}
+AutoDockUI = {}
 
 local player
 local playerCraft
@@ -54,7 +54,7 @@ function AutoDockUI.onInteract()
         local station = Entity()
         if station == nil then return end
 
-        invokeServerFunction("AutoDockUI.resolveInteraction", station.index, Player().index)
+        invokeServerFunction("resolveInteraction", station.index, Player().index)
 
         ScriptUI():stopInteraction()
 

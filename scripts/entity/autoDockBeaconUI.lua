@@ -5,25 +5,25 @@ require ("stringutility")
 require ("callable")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
--- namespace AutoDockBeacon
-AutoDockBeacon = AutoDockBeacon or {}
+-- namespace AutoDockBeaconUI
+AutoDockBeaconUI = {}
 
 local window
 local text = ""
 local args = {}
 
-function AutoDockBeacon.initialize(text_in, args_in)
+function AutoDockBeaconUI.initialize(text_in, args_in)
     if onServer() then
         text = text_in or ""
         args = args_in or {}
     else
         Player():registerCallback("onPreRenderHud", "onRenderHud")
 
-        AutoDockBeacon.sync()
+        AutoDockBeaconUI.sync()
     end
 end
 
-function AutoDockBeacon.interactionPossible(player, option)
+function AutoDockBeaconUI.interactionPossible(player, option)
     if option == 0 then
         if Player().index == Entity().factionIndex then return 1 end
         return false
@@ -31,7 +31,7 @@ function AutoDockBeacon.interactionPossible(player, option)
     return true
 end
 
-function AutoDockBeacon.initUI()
+function AutoDockBeaconUI.initUI()
 
     local res = getResolution()
     local size = vec2(300, 250)
@@ -42,7 +42,7 @@ function AutoDockBeacon.initUI()
 end
 
 
-function AutoDockBeacon.onRenderHud()
+function AutoDockBeaconUI.onRenderHud()
     -- display nearest x
     if os.time() % 2 == 0 then
         local renderer = UIRenderer()
@@ -55,11 +55,11 @@ function AutoDockBeacon.onRenderHud()
     end
 end
 
-function AutoDockBeacon.getText()
+function AutoDockBeaconUI.getText()
     return text
 end
 
-function AutoDockBeacon.sync(text_in, args_in)
+function AutoDockBeaconUI.sync(text_in, args_in)
     if onClient() then
         if text_in then
             InteractionText(Entity().index).text = text_in%_t % (args_in or {})
@@ -71,13 +71,13 @@ function AutoDockBeacon.sync(text_in, args_in)
     end
 
 end
-callable(AutoDockBeacon, "sync")
+callable(AutoDockBeaconUI, "sync")
 
-function AutoDockBeacon.secure()
+function AutoDockBeaconUI.secure()
     return {text = text, args = args}
 end
 
-function AutoDockBeacon.restore(values)
+function AutoDockBeaconUI.restore(values)
     text = values.text or ""
     args = values.args or {}
 end

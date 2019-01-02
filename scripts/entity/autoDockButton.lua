@@ -7,7 +7,7 @@ require("callable")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
 -- namespace AutoDockButton
-AutoDockButton = AutoDockButton or {}
+AutoDockButton = {}
 
 AutoDockButton.playerIndex = nil
 
@@ -43,7 +43,7 @@ function AutoDockButton.initUI()
 end
 
 function AutoDockButton.onYesButtonPress()
-    invokeServerFunction("AutoDockButton.cancelAutoDock")
+    invokeServerFunction("cancelAutoDock")
 end
 
 function AutoDockButton.cancelAutoDock()
