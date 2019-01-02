@@ -43,7 +43,7 @@ end
 
 -- create all required UI elements for the client side
 function AutoDockUI.initUI()
-    ScriptUI():registerInteraction("Auto-Dock to Station"%_t, "AutoDockUI.onInteract")
+    ScriptUI():registerInteraction("Auto-Dock to Station"%_t, "onInteract")
 end
 
 function AutoDockUI.onInteract()

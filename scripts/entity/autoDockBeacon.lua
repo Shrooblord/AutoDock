@@ -9,9 +9,9 @@ require("utility")
 -- namespace AutoDockBeacon
 AutoDockBeacon = {}
 
-local AutoDockBeacon.timer
-local AutoDockBeacon.station
-local AutoDockBeacon.playerShip
+local timer
+local station
+local playerShip
 
 function AutoDockBeacon.getUpdateInterval()
     return 0.02
@@ -23,14 +23,14 @@ end
 
 function AutoDockBeacon.initialize(timer_in, station_in, playerShip_in)
     if onServer() then
-        AutoDockBeacon.timer = timer_in or AutoDockBeacon.getUpdateInterval() --If no timer was supplied, we will die within one tick
-        AutoDockBeacon.station = station_in
-        AutoDockBeacon.playerShip = playerShip_in
+        timer = timer_in or AutoDockBeacon.getUpdateInterval() --If no timer was supplied, we will die within one tick
+        station = station_in
+        playerShip = playerShip_in
     end
 end
 
 function AutoDockBeacon.initUI()
-   ScriptUI():registerInteraction("Abort Auto-Docking Procedure"%_t, "AutoDockBeacon.onAbort") 
+   ScriptUI():registerInteraction("Abort Auto-Docking Procedure"%_t, "onAbort") 
 end
 
 function AutoDockBeacon.printError(errStr)
@@ -50,10 +50,10 @@ function AutoDockBeacon.dieOnInvalid(invalidVar)
 end
 
 function AutoDockBeacon.checkExpired()
-   if AutoDockBeacon.timer <= 0 then
+   if timer <= 0 then
         return AutoDockBeacon.die()
     else
-        AutoDockBeacon.timer = AutoDockBeacon.timer - AutoDockBeacon.getUpdateInterval()
+        timer = timer - AutoDockBeacon.getUpdateInterval()
     end 
 end
 
@@ -63,8 +63,8 @@ function AutoDockBeacon.onAbort()
         return
     end
     
-    if valid(AutoDockBeacon.playerShip) then
-        AutoDockBeacon.playerShip:setValue("autoDockAbort", true)
+    if valid(playerShip) then
+        playerShip:setValue("autoDockAbort", true)
     end
     return AutoDockBeacon.die()
 end
@@ -72,10 +72,10 @@ callable(AutoDockBeacon, "onAbort")
 
 function AutoDockBeacon.checkPlayerProximity()
     if onServer() then
-        if not valid(AutoDockBeacon.station) then
+        if not valid(station) then
             return AutoDockBeacon.dieOnInvalid("station")
         end
-        if not valid(AutoDockBeacon.playerShip) then
+        if not valid(playerShip) then
             return AutoDockBeacon.dieOnInvalid("playerShip")
         end
         
@@ -86,8 +86,8 @@ function AutoDockBeacon.checkPlayerProximity()
       
         local entities = {Sector():getEntitiesByLocation(sphere)}
         for _, ship in pairs(entities) do
-            if ship.index == AutoDockBeacon.playerShip.index then
-                AutoDockBeacon.playerShip:setValue("dockStage", 1)
+            if ship.index == playerShip.index then
+                playerShip:setValue("dockStage", 1)
                 return AutoDockBeacon.die()
             end
         end    

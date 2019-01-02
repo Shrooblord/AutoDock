@@ -38,7 +38,7 @@ function AutoDockButton.initUI()
     local hmsplit = UIHorizontalMultiSplitter(Rect(size), 5, 5, 0.2)
 
     -- buttons at the bottom
-    local buttonYes = window:createButton(hmsplit:partition(0), "Yes"%_t, "AutoDockButton.onYesButtonPress");
+    local buttonYes = window:createButton(hmsplit:partition(0), "Yes"%_t, "onYesButtonPress");
     buttonYes.textSize = 20 
 end
 
