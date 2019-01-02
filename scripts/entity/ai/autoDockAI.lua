@@ -1,4 +1,3 @@
-
 local AutoDockAI = {}
 
 AutoDockAI.usedDock = nil

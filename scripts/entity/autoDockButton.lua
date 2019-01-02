@@ -3,11 +3,16 @@ package.path = package.path .. ";data/scripts/entity/?.lua"
 package.path = package.path .. ";data/scripts/?.lua"
 
 require("stringutility")
+require("callable")
 
-playerIndex = nil
+-- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
+-- namespace AutoDockButton
+AutoDockButton = AutoDockButton or {}
 
-function interactionPossible(playerIndex_in, option)
-    playerIndex = playerIndex_in
+AutoDockButton.playerIndex = nil
+
+function AutoDockButton.interactionPossible(playerIndex_in, option)
+    AutoDockButton.playerIndex = playerIndex_in
     
     ship = Entity()
     if ship:getValue("autoDockShowButton") == true then  --we can only abort in stage 0 of Auto-Docking
@@ -15,11 +20,11 @@ function interactionPossible(playerIndex_in, option)
     end
 end
 
-function getIcon(seed, rarity)
+function AutoDockButton.getIcon(seed, rarity)
     return "data/textures/icons/contract.png"
 end
 
-function initUI()
+function AutoDockButton.initUI()
     local res = getResolution()
     local size = vec2(350, 80)
 
@@ -33,16 +38,17 @@ function initUI()
     local hmsplit = UIHorizontalMultiSplitter(Rect(size), 5, 5, 0.2)
 
     -- buttons at the bottom
-    local buttonYes = window:createButton(hmsplit:partition(0), "Yes"%_t, "onYesButtonPress");
+    local buttonYes = window:createButton(hmsplit:partition(0), "Yes"%_t, "AutoDockButton.onYesButtonPress");
     buttonYes.textSize = 20 
 end
 
-function onYesButtonPress()
-    invokeServerFunction("cancelAutoDock")
+function AutoDockButton.onYesButtonPress()
+    invokeServerFunction("AutoDockButton.cancelAutoDock")
 end
 
-function cancelAutoDock()
+function AutoDockButton.cancelAutoDock()
     ship = Entity()
     ship:setValue("autoDockAbort", true)
     terminate()
 end
+callable(AutoDockButton, "cancelAutoDock")

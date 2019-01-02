@@ -8,8 +8,13 @@ package.path = package.path .. ";data/scripts/?.lua"
 require("stringutility")
 require("utility")
 require("faction")
+require("callable")
 local AutoDockAI = require("mods/AutoDock/scripts/entity/ai/autoDockAI")
 local PlanGenerator = require("plangenerator")
+
+-- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
+-- namespace AutoDock
+AutoDock = AutoDock or {}
 
 local player
 local stationIndex
@@ -29,13 +34,13 @@ local keepAliveCountdown
 
 local dying = false
 
-keepAliveCountdown = 120  --Number of seconds the docking procedure should stay alive once stage 0 is initiated. If the player fails to come to the beacon and start the tractor beam procedure, we cancel
+keepAliveCountdown = 300  --Number of seconds the docking procedure should stay alive once stage 0 is initiated. If the player fails to come to the beacon and start the tractor beam procedure, we cancel
 
-function getStationIndex()
+function AutoDock.getStationIndex()
     return stationIndex
 end
 
-function getUpdateInterval()  -- how many seconds between executions of this script; basically inverse tickrate
+function AutoDock.getUpdateInterval()  -- how many seconds between executions of this script; basically inverse tickrate
     if AutoDockAI then
         if AutoDockAI.dockStage then            --Variable update cycles based on what point of the script we're in; some parts of the process require more accurate checking, while others don't
             if AutoDockAI.dockStage == 0 then
@@ -51,7 +56,7 @@ function getUpdateInterval()  -- how many seconds between executions of this scr
     return 0.2
 end
 
-function restore(values)
+function AutoDock.restore(values)
     stationIndex = Uuid(values.stationIndex)
     --script = values.script
     stage = values.stage
@@ -60,7 +65,7 @@ function restore(values)
     AutoDockAI.restore(values)
 end
 
-function secure()
+function AutoDock.secure()
     local values =
     {
         stationIndex = stationIndex.string,
@@ -74,7 +79,7 @@ function secure()
     return values
 end
 
-function die()
+function AutoDock.die()
     dying = true
     ship = Entity()
     
@@ -95,34 +100,34 @@ function die()
     terminate()
 end
 
-function onDelete()
+function AutoDock.onDelete()
     if not dying then
-        return die()
+        return AutoDock.die()
     end
 end
 
-function printError(errStr)
+function AutoDock.printError(errStr)
    if onServer() then
         local x,y = Sector():getCoordinates()
         print("AutoDock ERROR: ("..tostring(x)..":"..tostring(y).."):"..errStr%_t)
     end 
 end
 
-function talkChat(talkStr)
+function AutoDock.talkChat(talkStr)
     local station = Entity(stationIndex)
     
     player:sendChatMessage(station.translatedTitle.." "..station.name, 4, talkStr%_t)
 end
 
-function initialize(player_in, stationIndex_in)
+function AutoDock.initialize(player_in, stationIndex_in)
     if onServer() then
         player = Player(player_in)
         stationIndex = stationIndex_in
         local ship = Entity()
 
         if not stationIndex then
-            printError("STATION_IN NIL. TERMINATING.")
-            return die()
+            AutoDock.printError("STATION_IN NIL. TERMINATING.")
+            return AutoDock.die()
         end
         
         ship:setValue("autoDockShowButton", true)
@@ -132,40 +137,40 @@ function initialize(player_in, stationIndex_in)
     end
 end
 
-function onDockingFinished(ship)
-    talkChat("Docking procedure finalised. Welcome!")
-    return die()
+function AutoDock.onDockingFinished(ship)
+    AutoDock.talkChat("Docking procedure finalised. Welcome!")
+    return AutoDock.die()
 end
 
-function abortProcedure()
+function AutoDock.abortProcedure()
     ship = Entity()
     if ship:getValue("autoDockAbort") == true then
         print("AutoDocking procedure aborted by user.")
-        talkChat("Affirmative. Docking procedure aborted.")
-        return die()
+        AutoDock.talkChat("Affirmative. Docking procedure aborted.")
+        return AutoDock.die()
     end
 end
 
-function cancelProcedure()
+function AutoDock.cancelProcedure()
     local ship = Entity()
-    talkChat(ship.name..", you did not comply to protocol.\nThe docking procedure has been aborted.")
-    return die()
+    AutoDock.talkChat(ship.name..", you did not comply to protocol.\nThe docking procedure has been aborted.")
+    return AutoDock.die()
 end
 
 --Every tick while we are at docking stage 0, we countdown a keepAlive timer, after which the whole docking interaction is cancelled.
 --  The beacon has been destroyed, or the player left, or something else has happened. Whatever happened, we abort.
-function keepAliveCheck()
-    keepAliveCountdown = keepAliveCountdown - getUpdateInterval()
+function AutoDock.keepAliveCheck()
+    keepAliveCountdown = keepAliveCountdown - AutoDock.getUpdateInterval()
         
     if keepAliveCountdown <= 0 then
-        cancelProcedure()
+        AutoDock.cancelProcedure()
     end
 end
 
 --Hijhacked from SectorGenerator, with some added functionality specific to the Auto-Docker
-function createDockBeacon(position, faction, text, args)
+function AutoDock.createDockBeacon(position, faction, text, args)
     if onClient() then
-        invokeServerFunction("createDockBeacon", position, faction, text, args)
+        invokeServerFunction("AutoDock.createDockBeacon", position, faction, text, args)
         return
     end
     
@@ -204,33 +209,34 @@ function createDockBeacon(position, faction, text, args)
     
     return beacon
 end
+callable(AutoDock, "createDockBeacon")
 
-function updateServer(timeStep)
+function AutoDock.updateServer(timeStep)
     local ship = Entity()
 
     local station = Entity(stationIndex)
 
     -- in case the station doesn't exist anymore, abort
     if not station then
-        printError("STATION NO LONGER EXISTS. TERMINATING.")
-        return die()
+        AutoDock.printError("STATION NO LONGER EXISTS. TERMINATING.")
+        return AutoDock.die()
     end
     
-    abortProcedure()    --Internally checks whether the user has requested we abort
+    AutoDock.abortProcedure()    --Internally checks whether the user has requested we abort
 
     local pos, dir = station:getDockingPositions()
 
     if not pos or not dir or not valid(station) then
         -- something is not right, abort
-        printError("INVALID DOCKING PROCEDURE. TERMINATING.")
+        AutoDock.printError("INVALID DOCKING PROCEDURE. TERMINATING.")
         if onServer() then
             local x,y = Sector():getCoordinates()
             print("AutoDock ERROR: ("..tostring(x)..":"..tostring(y).."):"%_t)
-            return die()
+            return AutoDock.die()
         end
     else
         if not stageReport then
-            talkChat("Request to dock acknowledged. Please proceed to the indicated\nlocation within "..tostring(keepAliveCountdown).." seconds to initiate docking procedure.")
+            AutoDock.talkChat("Request to dock acknowledged. Please proceed to the indicated\nlocation within "..tostring(keepAliveCountdown).." seconds to initiate docking procedure.")
             ship:setValue("dockStage", 0)
             stageReport = true
         end
@@ -238,7 +244,7 @@ function updateServer(timeStep)
         local docked, tractorActive, target = AutoDockAI.autoDock(ship, station)
         
         if not tractorActive then
-            keepAliveCheck()
+            AutoDock.keepAliveCheck()
             
             if target then
                 if not dockAdded then
@@ -247,14 +253,14 @@ function updateServer(timeStep)
                     local faction = Faction(ship.factionIndex)
                     local beaconText = ship.name..", please proceed to this location to initiate the docking procedure with "..station.translatedTitle.." "..station.name.."."
 
-                    dockBeacon = createDockBeacon(target, faction, beaconText)
+                    dockBeacon = AutoDock.createDockBeacon(target, faction, beaconText)
 
                     dockAdded = true
                 end
             end
         end
         if docked then
-            onDockingFinished(ship)
+            AutoDock.onDockingFinished(ship)
         end
     end
 end

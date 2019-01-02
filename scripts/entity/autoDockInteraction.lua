@@ -2,19 +2,24 @@ package.path = package.path .. ";data/scripts/lib/?.lua"
 package.path = package.path .. ";data/scripts/entity/?.lua"
 require("stringutility")
 require ("faction")
+require("callable")
+
+-- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
+-- namespace AutoDockUI
+AutoDockUI = AutoDockUI or {}
 
 local player
 local playerCraft
 local station
 
-function printError(errStr)
+function AutoDockUI.printError(errStr)
    if onServer() then
         local x,y = Sector():getCoordinates()
         print("AutoDockInteraction ERROR: ("..tostring(x)..":"..tostring(y).."):"..errStr%_t)
     end 
 end
 
-function interactionPossible(playerIndex, option)
+function AutoDockUI.interactionPossible(playerIndex, option)
     player = Player(playerIndex)
     station = Entity()   --Entity() points to the Station
 
@@ -37,11 +42,11 @@ function interactionPossible(playerIndex, option)
 end
 
 -- create all required UI elements for the client side
-function initUI()
-    ScriptUI():registerInteraction("Auto-Dock to Station"%_t, "onInteract")
+function AutoDockUI.initUI()
+    ScriptUI():registerInteraction("Auto-Dock to Station"%_t, "AutoDockUI.onInteract")
 end
 
-function onInteract()
+function AutoDockUI.onInteract()
     if onClient() then
         local ship = Player().craft
         if ship == nil then return end
@@ -49,7 +54,7 @@ function onInteract()
         local station = Entity()
         if station == nil then return end
 
-        invokeServerFunction("resolveInteraction", station.index, Player().index)
+        invokeServerFunction("AutoDockUI.resolveInteraction", station.index, Player().index)
 
         ScriptUI():stopInteraction()
 
@@ -57,13 +62,13 @@ function onInteract()
     end
 end
 
-function resolveInteraction(stationIndex, playerInd)
+function AutoDockUI.resolveInteraction(stationIndex, playerInd)
     if not stationIndex then
-        printError("onInteract - stationIndex nil. Aborting.")
+        AutoDockUI.printError("AutoDockUI.onInteract - stationIndex nil. Aborting.")
         return
     end
     if not playerInd then
-        printError("onInteract - playerInd nil. Aborting.")
+        AutoDockUI.printError("AutoDockUI.onInteract - playerInd nil. Aborting.")
         return
     end
 
@@ -72,7 +77,7 @@ function resolveInteraction(stationIndex, playerInd)
 
     playerCraft = player.craft
     if playerCraft == nil then
-        printError("onInteract - could not get playerCraft: value is nil.")
+        AutoDockUI.printError("AutoDockUI.onInteract - could not get playerCraft: value is nil.")
         return false
     end
 
@@ -87,13 +92,14 @@ function resolveInteraction(stationIndex, playerInd)
     end
 
     if station.type == EntityType.Station then
-        if CheckFactionInteraction(playerInd, -10000) then
+        --if CheckFactionInteraction(playerInd, -10000) then
             --Everything A-OK. We can dock!
             playerShip:addScriptOnce("mods/AutoDock/scripts/entity/ai/autoDock.lua", playerInd, stationIndex)
             return true
-        else
-            player:sendChatMessage(station.translatedTitle.." "..station.name, 4, "Request to dock denied. Our records say that we're not allowed to do business with you.\nCome back when your relations to our faction are better."%_t)
-            return false
-        end
+        --else
+        --    player:sendChatMessage(station.translatedTitle.." "..station.name, 4, "Request to dock denied. Our records say that we're not allowed to do business with you.\nCome back when your relations to our faction are better."%_t)
+        --    return false
+        --end
     end
 end
+callable(AutoDockUI, "resolveInteraction")

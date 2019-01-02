@@ -2,27 +2,28 @@
 package.path = package.path .. ";data/scripts/lib/?.lua"
 
 require ("stringutility")
+require ("callable")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
--- namespace Beacon
-Beacon = {}
+-- namespace AutoDockBeacon
+AutoDockBeacon = AutoDockBeacon or {}
 
 local window
 local text = ""
 local args = {}
 
-function Beacon.initialize(text_in, args_in)
+function AutoDockBeacon.initialize(text_in, args_in)
     if onServer() then
         text = text_in or ""
         args = args_in or {}
     else
         Player():registerCallback("onPreRenderHud", "onRenderHud")
 
-        Beacon.sync()
+        AutoDockBeacon.sync()
     end
 end
 
-function Beacon.interactionPossible(player, option)
+function AutoDockBeacon.interactionPossible(player, option)
     if option == 0 then
         if Player().index == Entity().factionIndex then return 1 end
         return false
@@ -30,7 +31,7 @@ function Beacon.interactionPossible(player, option)
     return true
 end
 
-function Beacon.initUI()
+function AutoDockBeacon.initUI()
 
     local res = getResolution()
     local size = vec2(300, 250)
@@ -41,7 +42,7 @@ function Beacon.initUI()
 end
 
 
-function Beacon.onRenderHud()
+function AutoDockBeacon.onRenderHud()
     -- display nearest x
     if os.time() % 2 == 0 then
         local renderer = UIRenderer()
@@ -54,11 +55,11 @@ function Beacon.onRenderHud()
     end
 end
 
-function Beacon.getText()
+function AutoDockBeacon.getText()
     return text
 end
 
-function Beacon.sync(text_in, args_in)
+function AutoDockBeacon.sync(text_in, args_in)
     if onClient() then
         if text_in then
             InteractionText(Entity().index).text = text_in%_t % (args_in or {})
@@ -70,12 +71,13 @@ function Beacon.sync(text_in, args_in)
     end
 
 end
+callable(AutoDockBeacon, "sync")
 
-function Beacon.secure()
+function AutoDockBeacon.secure()
     return {text = text, args = args}
 end
 
-function Beacon.restore(values)
+function AutoDockBeacon.restore(values)
     text = values.text or ""
     args = values.args or {}
 end

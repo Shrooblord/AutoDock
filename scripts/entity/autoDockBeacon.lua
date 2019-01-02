@@ -5,74 +5,78 @@ package.path = package.path .. ";data/scripts/?.lua"
 require("stringutility")
 require("utility")
 
-local timer
-local station
-local playerShip
-local AutoDockAI
+-- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
+-- namespace AutoDockBeacon
+AutoDockBeacon = AutoDockBeacon or {}
 
-function getUpdateInterval()
+local AutoDockBeacon.timer
+local AutoDockBeacon.station
+local AutoDockBeacon.playerShip
+
+function AutoDockBeacon.getUpdateInterval()
     return 0.02
 end
 
-function interactionPossible(playerIndex, option)
+function AutoDockBeacon.interactionPossible(playerIndex, option)
     return true
 end
 
-function initialize(timer_in, station_in, playerShip_in)
+function AutoDockBeacon.initialize(timer_in, station_in, playerShip_in)
     if onServer() then
-        timer = timer_in or getUpdateInterval() --If no timer was supplied, we will die within one tick
-        station = station_in
-        playerShip = playerShip_in
+        AutoDockBeacon.timer = timer_in or AutoDockBeacon.getUpdateInterval() --If no timer was supplied, we will die within one tick
+        AutoDockBeacon.station = station_in
+        AutoDockBeacon.playerShip = playerShip_in
     end
 end
 
-function initUI()
-   ScriptUI():registerInteraction("Abort Auto-Docking Procedure"%_t, "onAbort") 
+function AutoDockBeacon.initUI()
+   ScriptUI():registerInteraction("Abort Auto-Docking Procedure"%_t, "AutoDockBeacon.onAbort") 
 end
 
-function printError(errStr)
+function AutoDockBeacon.printError(errStr)
    if onServer() then
         local x,y = Sector():getCoordinates()
         print("autoDockBeacon ERROR: ("..tostring(x)..":"..tostring(y).."):"..errStr%_t)
     end 
 end
 
-function die()
+function AutoDockBeacon.die()
     Sector():deleteEntityJumped(Entity())
 end
 
-function dieOnInvalid(invalidVar)
-    printError("ARGUMENT "..invalidVar.." IS INVALID. KILLING...")
-    return die()
+function AutoDockBeacon.dieOnInvalid(invalidVar)
+    AutoDockBeacon.printError("ARGUMENT "..invalidVar.." IS INVALID. KILLING...")
+    return AutoDockBeacon.die()
 end
 
-function checkExpired()
-   if timer <= 0 then
-        return die()
+function AutoDockBeacon.checkExpired()
+   if AutoDockBeacon.timer <= 0 then
+        return AutoDockBeacon.die()
     else
-        timer = timer - getUpdateInterval()
+        AutoDockBeacon.timer = AutoDockBeacon.timer - AutoDockBeacon.getUpdateInterval()
     end 
 end
 
-function onAbort()
+function AutoDockBeacon.onAbort()
     if onClient() then
-        invokeServerFunction("onAbort")
+        invokeServerFunction("AutoDockBeacon.onAbort")
         return
     end
     
-    if valid(playerShip) then
-        playerShip:setValue("autoDockAbort", true)
+    if valid(AutoDockBeacon.playerShip) then
+        AutoDockBeacon.playerShip:setValue("autoDockAbort", true)
     end
-    return die()
+    return AutoDockBeacon.die()
 end
+callable(AutoDockBeacon, "onAbort")
 
-function checkPlayerProximity()
+function AutoDockBeacon.checkPlayerProximity()
     if onServer() then
-        if not valid(station) then
-            return dieOnInvalid("station")
+        if not valid(AutoDockBeacon.station) then
+            return AutoDockBeacon.dieOnInvalid("station")
         end
-        if not valid(playerShip) then
-            return dieOnInvalid("playerShip")
+        if not valid(AutoDockBeacon.playerShip) then
+            return AutoDockBeacon.dieOnInvalid("playerShip")
         end
         
         --bounding sphere to player. if player enters, trigger docking stage to bump to next stage
@@ -82,18 +86,18 @@ function checkPlayerProximity()
       
         local entities = {Sector():getEntitiesByLocation(sphere)}
         for _, ship in pairs(entities) do
-            if ship.index == playerShip.index then
-                playerShip:setValue("dockStage", 1)
-                return die()
+            if ship.index == AutoDockBeacon.playerShip.index then
+                AutoDockBeacon.playerShip:setValue("dockStage", 1)
+                return AutoDockBeacon.die()
             end
         end    
     end
 end
 
-function updateServer(timeStep)
+function AutoDockBeacon.updateServer(timeStep)
     if onServer() then
-        checkExpired()
+        AutoDockBeacon.checkExpired()
         
-        checkPlayerProximity()
+        AutoDockBeacon.checkPlayerProximity()
     end
 end

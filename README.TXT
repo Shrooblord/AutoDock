@@ -1,3 +1,6 @@
+Version:
+1.1
+
 SHROOBLORD:
 
 [[TO-DOS]]
@@ -12,6 +15,8 @@ SHROOBLORD:
 5. Add some more random dialog. Look at how Stations randomise their welcome text. Do that.
 
 6. Add Hotkey to Auto-Dock. Bringing up F Interaction Menu every time is lame. Look at the Systems Overhaul mod thingy you downloaded (the one with custom UI and alt-codes) for how to do so.
+
+7. Make Beacon invulnerable to damage. Currently it can be destroyed (which is bad).
 
 ====
 
@@ -74,4 +79,13 @@ to scripts/lib/defaultscripts.lua inside the Stations block of scripts
 
 [[KNOWN ISSUES]]
 
-1. Tiny ships like your Mining Drone may not work as intended; the tractor beams can get stuck at the end of the docking procedure.
+1. Tiny ships like your Mining Drone may not work as intended; the tractor beams can get stuck at the end of the docking procedure. This is why the Drone is disabled when attempting to activate a Station's AutoDock while piloting it.
+
+===
+
+[[CHANGELOG]]
+
+1.1 -- 0.20.2 Security update
+    - Added "callable" functionality to remote calls.
+
+1.0 -- Initial release
