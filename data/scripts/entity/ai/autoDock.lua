@@ -9,7 +9,7 @@ require("stringutility")
 require("utility")
 require("faction")
 require("callable")
-local AutoDockAI = require("mods/AutoDock/scripts/entity/ai/autoDockAI")
+local AutoDockAI = require("mods/AutoDock/data/scripts/entity/ai/autoDockAI")
 local PlanGenerator = require("plangenerator")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
@@ -133,7 +133,7 @@ function AutoDock.initialize(player_in, stationIndex_in)
         ship:setValue("autoDockShowButton", true)
         ship:setValue("autoDockInProgress", true)
         
-        ship:addScriptOnce("mods/AutoDock/scripts/entity/autoDockButton.lua")
+        ship:addScriptOnce("mods/AutoDock/data/scripts/entity/autoDockButton.lua")
     end
 end
 
@@ -201,11 +201,11 @@ function AutoDock.createDockBeacon(position, faction, text, args)
     if faction then desc.factionIndex = faction.index end
 
     local beacon = Sector():createEntity(desc)
-    beacon:addScript("mods/AutoDock/scripts/entity/autoDockBeaconUI", text, args)
+    beacon:addScript("mods/AutoDock/data/scripts/entity/autoDockBeaconUI", text, args)
     
     local station = Entity(stationIndex)
     local ship = Entity()
-    beacon:addScript("mods/AutoDock/scripts/entity/autoDockBeacon", keepAliveCountdown, station, ship)  --keep the Beacon around for as long as we want the procedure to keep alive
+    beacon:addScript("mods/AutoDock/data/scripts/entity/autoDockBeacon", keepAliveCountdown, station, ship)  --keep the Beacon around for as long as we want the procedure to keep alive
     
     return beacon
 end

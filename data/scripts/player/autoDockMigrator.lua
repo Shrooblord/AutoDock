@@ -21,7 +21,7 @@ function onSectorChanged()
                     print("AutoDock Migrator: Skipping "..tostring(station.translatedTitle).." "..tostring(station.name).."; it has indicated that it does not wish to receive any AutoDocks.");
                 else
                     print("AutoDock Migrator: Adding AutoDocks to "..tostring(station.translatedTitle).." "..tostring(station.name)..".")
-                    station:addScriptOnce("mods/AutoDock/scripts/entity/autoDockInteraction.lua")
+                    station:addScriptOnce("mods/AutoDock/data/scripts/entity/autoDockInteraction.lua")
                     station:setValue("autoDockScriptEnabled", true)
                     stationsTouched = stationsTouched + 1
 

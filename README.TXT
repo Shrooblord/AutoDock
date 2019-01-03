@@ -47,13 +47,13 @@ SHROOBLORD:
 
 2. add
 
-    Config.Add("mods/AutoDock/scripts/player/autoDockMigrator.lua")
+    Config.Add("mods/AutoDock/data/scripts/player/autoDockMigrator.lua")
 
 to SSL config
 
 3. add
 
-    station:addScriptOnce("mods/AutoDock/scripts/entity/autoDockInteraction.lua")
+    station:addScriptOnce("mods/AutoDock/data/scripts/entity/autoDockInteraction.lua")
 
 to scripts/lib/defaultscripts.lua inside the Stations block of scripts
 
