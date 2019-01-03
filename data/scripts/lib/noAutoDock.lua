@@ -2,9 +2,14 @@
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.
 -- namespace noAutoDock
-noAutoDock = {}
+local noAutoDock = {}
 
-local station = Entity()
-station:setValue("noAutoDock", true)
+function noAutoDock.initialize()
+    if onServer() then
+        local station = Entity()
+        station:setValue("noAutoDock", true)
+        print("noAutoDock: Unregistered Station from AutoDock Migrator.")
+    end
+end
 
 return noAutoDock
