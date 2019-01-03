@@ -8,7 +8,15 @@ function noAutoDock.initialize()
     if onServer() then
         local station = Entity()
         station:setValue("noAutoDock", true)
-        print("noAutoDock: Unregistered Station from AutoDock Migrator.")
+
+        if station:hasScript("mods/AutoDock/data/scripts/entity/autoDockInteraction.lua") then
+            station:removeScript("mods/AutoDock/data/scripts/entity/autoDockInteraction.lua")
+        end
+        if station:hasScript("mods/AutoDock/data/scripts/entity/ai/autoDock.lua") then
+            station:removeScript("mods/AutoDock/data/scripts/entity/ai/autoDock.lua")
+        end
+
+        print("noAutoDock: Unregistered "..tostring(station.translatedTitle).." "..tostring(station.name).." from AutoDock Migrator.")
     end
 end
 

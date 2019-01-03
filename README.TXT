@@ -1,41 +1,5 @@
 Version:
-1.1
-
-SHROOBLORD:
-
-[[TO-DOS]]
-1. Add Alliance support
-
-2. Change Interaction text with Station once Auto-Dock procedure is intialised.
-
-3. Add a new script that makes use of autoDockAI's disembark() function. Its Interaction option with a Station is only available when docked to that Station.
-
-4. Add Tutorial box to illustrate how to use these new beacons.
-
-5. Add some more random dialog. Look at how Stations randomise their welcome text. Do that.
-
-6. Add Hotkey to Auto-Dock. Bringing up F Interaction Menu every time is lame. Look at the Systems Overhaul mod thingy you downloaded (the one with custom UI and alt-codes) for how to do so.
-
-7. Make Beacon invulnerable to damage. Currently it can be destroyed (which is bad).
-
-====
-
-[[TESTING]]
-1. Many, many Stations and different Docks
-
-2. Big ships, small ships
-
-3. Different speeds of approach
-
-4. All angles of approach work as intended
-
-5. UI shows/hides under correct circumstances:
-    - Button shows when Auto-Docking Procedure started
-    - "Auto-Dock to Station" Interaction shows when A) not Docked at Station and B) Auto-Docking Procedure has not been started
-    - "Disembark" Interaction shows when Docked at Station
-    - No options / UI appear when the player is piloting a Station
-    
-6. All Stations and Factories get functionality added in; Migrator works
+1.2.1
 
 ====
 
@@ -87,7 +51,10 @@ to scripts/lib/defaultscripts.lua inside the Stations block of scripts
 
 If you want to disable AutoDocks for a Station of yours, add the following code near the top of one of its scripts:
 
-  local noAutoDock = require ("mods/AutoDock/data/scripts/lib/noAutoDock")
+    local noAutoDock = require ("mods/AutoDock/data/scripts/lib/noAutoDock")
+    if noAutoDock then
+        noAutoDock.initialize()
+    end
 
 This local variable is never used, but simply including it will execute the code inside the script, causing your station to be given a "noAutoDock = true" Entity Value which the AutoDock Migrator now checks for.
 If this value is found, and its value is true, the AutoDock Migrator will skip that station and not add any AutoDocks to it.
@@ -97,6 +64,12 @@ If AutoDock is not installed, this value is nil, but because you're not using th
 ===
 
 [[CHANGELOG]]
+
+1.2.1 -- Fix for the Opt-Out update
+    - Fixed opt-out functionality. Should all work as expected now. See updated installation instructions in [[FOR MODDERS]].
+
+1.2 -- AutoDock Opt-Out update
+	- Added functionality to opt-out your Station for AutoDocks. See the [[FOR MODDERS]] section for information.
 
 1.1 -- 0.20.2 Security update
     - Added Namespacing to all scripts where applicable.
