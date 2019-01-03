@@ -83,6 +83,19 @@ to scripts/lib/defaultscripts.lua inside the Stations block of scripts
 
 ===
 
+[[FOR MODDERS]]
+
+If you want to disable AutoDocks for a Station of yours, add the following code near the top of one of its scripts:
+
+  local noAutoDock = require ("mods/AutoDock/data/scripts/lib/noAutoDock")
+
+This local variable is never used, but simply including it will execute the code inside the script, causing your station to be given a "noAutoDock = true" Entity Value which the AutoDock Migrator now checks for.
+If this value is found, and its value is true, the AutoDock Migrator will skip that station and not add any AutoDocks to it.
+
+If AutoDock is not installed, this value is nil, but because you're not using the value anywhere in your script, that doesn't matter. So it works with AutoDock installed, and with AutoDock not installed.
+
+===
+
 [[CHANGELOG]]
 
 1.1 -- 0.20.2 Security update
