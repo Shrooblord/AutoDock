@@ -1,10 +1,10 @@
 
 meta =
 {
-    id = "Shrooblord's Auto-Dock",
+    id = "Shrooblord_Auto-Dock",
     name = "Auto-Dock",
     title = "Auto-Dock",
-    description = "Auto-Dock allows you to dock with Stations while flying at them at speeds of up to 2 km/s. Gone are the days that you need to carefully align your ship and approach a dock! Gone are the days that you accidentally clip half your ship's HP worth of damage when trying to hire some crew. To use Auto-Dock, use the new interaction when talking to the Station you would wish to dock with.",
+    description = "Auto-Dock allows you to dock with Stations while flying at them at speeds of up to 2 km/s. To use Auto-Dock, use the new interaction when talking to the Station you would wish to dock with. Then fly towards the Beacon that gets spawned for that Station in order to initiate the automatic docking procedure.",
     authors = {"Shrooblord"},
     version = "2.0.0",
 
@@ -24,7 +24,8 @@ meta =
     --      {id = "OptionalMod", min = "0.2", optional = true}, -- we support OptionalMod optionally, starting at version 0.2
     -- },
     dependencies = {
-
+        {id = "Avorion", min = "0.25", max = "0.26"},
+        {id = "ShrooblordMothership", min = "1.0.0"},
     },
 
     serverSideOnly = false,
