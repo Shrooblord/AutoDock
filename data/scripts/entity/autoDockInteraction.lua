@@ -78,7 +78,7 @@ function AutoDockUI.resolveInteraction(stationIndex, playerInd)
     if station.isStation then
         --if CheckFactionInteraction(playerInd, -10000) then
             --Everything A-OK. We can dock!
-            playerShip:addScriptOnce("mods/AutoDock/data/scripts/entity/ai/autoDock.lua", playerInd, stationIndex)
+            playerShip:addScriptOnce("ai/autoDock.lua", playerInd, stationIndex)
             return true
         --else
         --    player:sendChatMessage(station.translatedTitle.." "..station.name, 4, "Request to dock denied. Our records say that we're not allowed to do business with you.\nCome back when your relations to our faction are better."%_t)

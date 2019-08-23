@@ -65,18 +65,21 @@ end
 --script termination & deletion
 function AutoDock.die()
     dying = true
-    local ship = Entity()
+    local ship = Entity()    
     
-    if valid(ship) then 
+    if valid(ship) then
         ship:setValue("dockStage", nil)
         ship:setValue("dockUsed", nil)
         ship:setValue("autoDockAbort", nil)
 
-        ship:setValue("autoDockShowButton", false)
+        ship:setValue("autoDockShowButton", nil)
         
         ship:setValue("autoDockInProgress", nil)
+
+        ship:removeScript("ai/autoDockAI.lua")
+        ship:removeScript("autoDockButton.lua")
     end
-    
+
     if valid(dockBeacon) then
         Sector():deleteEntity(dockBeacon)
     end
@@ -119,7 +122,7 @@ function AutoDock.initialize(player_in, stationIndex_in)
         ship:setValue("autoDockShowButton", true)
         ship:setValue("autoDockInProgress", true)
         
-        ship:addScriptOnce("mods/AutoDock/data/scripts/entity/autoDockButton.lua")
+        ship:addScriptOnce("autoDockButton.lua")
     end
 end
 
@@ -137,8 +140,9 @@ function AutoDock.abortProcedure()
     if ship:getValue("autoDockAbort") == true then
         prt("AutoDocking procedure aborted by user.", 0, config.modID, fromScript, fromFunc)
         AutoDock.talkChat("Affirmative. Docking procedure aborted.")
-        return AutoDock.die()
+        return true
     end
+    return false
 end
 
 function AutoDock.cancelProcedure()
@@ -195,11 +199,11 @@ function AutoDock.createDockBeacon(position, faction, text, args)
     if faction then desc.factionIndex = faction.index end
 
     local beacon = Sector():createEntity(desc)
-    beacon:addScript("mods/AutoDock/data/scripts/entity/autoDockBeaconUI", text, args)
+    beacon:addScript("autoDockBeaconUI.lua", text, args)
     
     local station = Entity(stationIndex)
     local ship = Entity()
-    beacon:addScript("mods/AutoDock/data/scripts/entity/autoDockBeacon", keepAliveCountdown, station, ship)  --keep the Beacon around for as long as we want the procedure to keep alive
+    beacon:addScript("autoDockBeacon.lua", keepAliveCountdown, station, ship)  --keep the Beacon around for as long as we want the procedure to keep alive
     
     Placer.resolveIntersections()
 
@@ -221,7 +225,9 @@ function AutoDock.updateServer(timeStep)
         return AutoDock.die()
     end
     
-    AutoDock.abortProcedure()    --Internally checks whether the user has requested we abort
+    if AutoDock.abortProcedure() then    --Internally checks whether the user has requested we abort
+        return AutoDock.die()
+    end
 
     local pos, dir = station:getDockingPositions()
 

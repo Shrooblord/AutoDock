@@ -8,7 +8,7 @@ package.path = package.path .. ";data/scripts/entity/?.lua"
 
 include("stringutility")
 include("utility")
-local config = include("sMConf")
+local config = include("aDockConf")
 include("sMPrint")
 
 -- Don't remove or alter the following comment, it tells the game the namespace this script lives in. If you remove it, the script will break.

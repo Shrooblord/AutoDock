@@ -26,31 +26,33 @@ function AutoDockAI.printUsedDock()
         local fromFunc = "printUsedDock"
         local msg = "dock: "..tostring(AutoDockAI.usedDock)
 
-        prtDbg(msg, 0, config.modID, 3, fromScript, fromFunc, "SERVER")
+        prtDbg(tostring(msg), 0, config.modID, 3, fromScript, fromFunc, "SERVER")
     end
 end
 
-function AutoDockAI.printDockStage()
+function AutoDockAI.printDockStage(ship)
     if onServer() then
         local fromFunc = "printDockStage"
         local msg = "dockStage: "..tostring(ship:getValue("dockStage"))
 
-        prtDbg(msg, 0, config.modID, 4, fromScript, fromFunc, "SERVER")
+        prtDbg(tostring(msg), 0, config.modID, 4, fromScript, fromFunc, "SERVER")
     end
 end
 
 function AutoDockAI.printDone()
     if onServer() then
-        local fromFunc = "prindDone"
+        local fromFunc = "printDone"
         local msg = "AutoDockAI: Docking complete."
 
-        prtDbg(msg, 0, config.modID, 2, fromScript, fromFunc, "SERVER")
+        prtDbg(tostring(msg), 0, config.modID, 2, fromScript, fromFunc, "SERVER")
     end
 end
 
 
 --figure out where to spawn the Docking Beacon based on ship and station sizes
 function AutoDockAI.findBeaconTarget(ship, station, pos, dir)
+    if ship:getValue("autoDockAbort") == true then return end
+
     local fromFunc = "findBeaconTarget"
     local offset
     local shipBoundsRadius
@@ -137,13 +139,13 @@ function AutoDockAI.autoDock(ship, station)
         local target = AutoDockAI.findBeaconTarget(ship, station, pos, dir)
         
         local msg = "pos: "..tostring(pos)
-        prtDbg(msg, 0, config.modID, 3, fromFunc, fromScript, ship.name)
+        prtDbg(msg, 0, config.modID, 3, fromScript, fromFunc, ship.name)
 
         msg = "dir: "..tostring(dir)
-        prtDbg(msg, 0, config.modID, 3, fromFunc, fromScript, ship.name)
+        prtDbg(msg, 0, config.modID, 3, fromScript, fromFunc, ship.name)
 
         msg = "target: "..tostring(target)
-        prtDbg(msg, 0, config.modID, 3, fromFunc, fromScript, ship.name)
+        prtDbg(msg, 0, config.modID, 3, fromScript, fromFunc, ship.name)
         
         AutoDockAI.printUsedDock()
         
@@ -152,7 +154,7 @@ function AutoDockAI.autoDock(ship, station)
         if docks:inLightArea(ship, AutoDockAI.usedDock) then
             -- when the light area was reached, start stage 1 of the docking process
             ship:setValue("dockStage", 1)  --this is also set by the Beacon; it's set here as well in case the Beacon activation conditions aren't met, but the ship still ends up in the light area
-            AutoDockAI.printDockStage()
+            AutoDockAI.printDockStage(ship)
             AutoDockAI.printUsedDock()
             return false, false, target
         else
@@ -167,7 +169,7 @@ function AutoDockAI.autoDock(ship, station)
         
         if not docks:startDocking(ship, AutoDockAI.usedDock) then
             --ship:setValue("dockStage", 0)
-            AutoDockAI.printDockStage()
+            AutoDockAI.printDockStage(ship)
             return false
         else
             -- docking worked
@@ -185,7 +187,7 @@ function AutoDockAI.autoDock(ship, station)
             return true
         else
             -- tractor beams are active
-            AutoDockAI.printDockStage()
+            AutoDockAI.printDockStage(ship)
             AutoDockAI.printUsedDock()
             return false, true
         end
