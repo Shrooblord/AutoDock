@@ -7,7 +7,7 @@ package.path = package.path .. ";data/scripts/entity/?.lua"
 package.path = package.path .. ";data/scripts/entity/ai/?.lua"
 package.path = package.path .. ";data/scripts/lib/?.lua"
 
-config = include("aDockConf")
+local config = include("aDockConf")
 include("sMPrint")
 include("stringutility")
 include("utility")
@@ -60,30 +60,6 @@ function AutoDock.getUpdateInterval()  -- how many seconds between executions of
     return 1
 end
 
-
---loading and saving from disk
-function AutoDock.restore(values)
-    stationIndex = Uuid(values.stationIndex)
-    --script = values.script
-    stage = values.stage
-    waitCount = values.waitCount
-
-    AutoDockAI.restore(values)
-end
-
-function AutoDock.secure()
-    local values =
-    {
-        stationIndex = stationIndex.string,
-        --script = script,
-        stage = stage,
-        waitCount = waitCount,
-    }
-
-    AutoDockAI.secure(values)
-
-    return values
-end
 
 
 --script termination & deletion
@@ -286,4 +262,30 @@ function AutoDock.updateServer(timeStep)
             AutoDock.onDockingFinished(ship)
         end
     end
+end
+
+
+
+--loading and saving from disk
+function AutoDock.restore(values)
+    stationIndex = Uuid(values.stationIndex)
+    --script = values.script
+    stage = values.stage
+    waitCount = values.waitCount
+
+    AutoDockAI.restore(values)
+end
+
+function AutoDock.secure()
+    local values =
+    {
+        stationIndex = stationIndex.string,
+        --script = script,
+        stage = stage,
+        waitCount = waitCount,
+    }
+
+    AutoDockAI.secure(values)
+
+    return values
 end
