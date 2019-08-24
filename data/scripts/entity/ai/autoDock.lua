@@ -64,24 +64,26 @@ end
 
 --script termination & deletion
 function AutoDock.die()
-    dying = true
-    local ship = Entity()    
-    
-    if valid(ship) then
-        ship:setValue("dockStage", nil)
-        ship:setValue("dockUsed", nil)
-        ship:setValue("autoDockAbort", nil)
-
-        ship:setValue("autoDockShowButton", nil)
+    if onServer() then
+        dying = true
+        local ship = Entity()
         
-        ship:setValue("autoDockInProgress", nil)
+        if valid(ship) then
+            ship:setValue("dockStage", nil)
+            ship:setValue("dockUsed", nil)
+            ship:setValue("autoDockAbort", nil)
 
-        ship:removeScript("ai/autoDockAI.lua")
-        ship:removeScript("autoDockButton.lua")
-    end
+            ship:setValue("autoDockShowButton", nil)
+            
+            ship:setValue("autoDockInProgress", nil)
 
-    if valid(dockBeacon) then
-        Sector():deleteEntity(dockBeacon)
+            ship:removeScript("ai/autoDockAI.lua")
+            ship:removeScript("autoDockButton.lua")
+        end
+
+        if valid(dockBeacon) then
+            Sector():deleteEntity(dockBeacon)
+        end
     end
     
     terminate()
